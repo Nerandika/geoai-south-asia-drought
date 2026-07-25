@@ -56,18 +56,39 @@ GEOJSON_FILE = "https://drive.google.com/file/d/1snmcDuol7nstpzHxYlXYZ9zmrxwnoP1
 @st.cache_data
 def load_csv():
 
-    df = pd.read_csv(CSV_FILE)
+    df = pd.read_parquet(CSV_FILE)
 
     df["DATE"] = pd.to_datetime(df["DATE"])
 
     return df
 
-@st.cache_data
-def load_geojson():
 
-    gdf = gpd.read_file(GEOJSON_FILE)
+df = load_csv()
 
-    return gdf
+
+# Check required columns
+
+required_columns = [
+
+    "hex_id",
+    "DATE",
+    "spi",
+    "ndvi",
+    "lst",
+    "AI_Drought_Forecast",
+    "Drought_Risk_Index",
+    "Drought_Class"
+
+]
+
+
+for col in required_columns:
+
+    if col not in df.columns:
+
+        st.error(f"Missing column: {col}")
+
+        st.stop()
 
 
 # ==========================================================
