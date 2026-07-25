@@ -809,11 +809,11 @@ if len(current_hex) > 0:
 
         st.metric(
 
-            "SPI Forecast",
+            "SPI Forcast",
 
             round(
 
-                prediction_row["Future_SPI"],
+                prediction_row["spi"],
 
                 2
 
