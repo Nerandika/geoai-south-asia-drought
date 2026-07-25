@@ -1,4 +1,3 @@
-# ==========================================================
 # GeoAI South Asia Drought Monitoring & Risk Assessment Platform
 # Part 1/3
 # ==========================================================
@@ -29,39 +28,101 @@ st.set_page_config(
 # ==========================================================
 
 st.title(
-    "GeoAI South Asia Drought Early Warning System"
+    "🌍 GeoAI South Asia Drought Early Warning System"
 )
+
 st.markdown(
 """
 **AI-based drought assessment platform for South Asia**
 
-**Study Region:** South Asia
+Study Region: South Asia
 """
 )
+
 
 # ==========================================================
 # FILE PATHS
 # ==========================================================
 
-CSV_FILE = "https://drive.google.com/uc?export=download&id=1v444HE4Pf9bnlA5g6GuW66a2Gf98ecNw"
+CSV_FILE = (
+    "https://drive.google.com/uc?"
+    "export=download&id=1v444HE4Pf9bnlA5g6GuW66a2Gf98ecNw"
+)
 
-GEOJSON_FILE = "https://drive.google.com/uc?export=download&id=1snmcDuol7nstpzHxYlXYZ9zmrxwnoP1G"
+
+GEOJSON_FILE = (
+    "https://drive.google.com/uc?"
+    "export=download&id=1snmcDuol7nstpzHxYlXYZ9zmrxwnoP1G"
+)
+
 
 # ==========================================================
-# LOAD DATA
+# LOAD CSV DATA
 # ==========================================================
 
 @st.cache_data
 def load_csv():
 
-    df = pd.read_csv(CSV_FILE)
+    try:
 
-    df["DATE"] = pd.to_datetime(df["DATE"])
+        df = pd.read_csv(CSV_FILE)
 
-    return df
+        df["DATE"] = pd.to_datetime(
+            df["DATE"]
+        )
+
+        return df
 
 
-# Check required columns
+    except Exception as e:
+
+        st.error(
+            f"CSV loading error: {e}"
+        )
+
+        st.stop()
+
+
+
+# ==========================================================
+# LOAD GEOJSON DATA
+# ==========================================================
+
+@st.cache_data
+def load_geojson():
+
+    try:
+
+        gdf = gpd.read_file(
+            GEOJSON_FILE
+        )
+
+        return gdf
+
+
+    except Exception as e:
+
+        st.error(
+            f"GeoJSON loading error: {e}"
+        )
+
+        st.stop()
+
+
+
+# ==========================================================
+# INITIALIZE DATA
+# ==========================================================
+
+df = load_csv()
+
+hex_gdf = load_geojson()
+
+
+
+# ==========================================================
+# CHECK CSV COLUMNS
+# ==========================================================
 
 required_columns = [
 
@@ -77,33 +138,14 @@ required_columns = [
 ]
 
 
-for col in required_columns:
-
-    if col not in df.columns:
-
-        st.error(f"Missing column: {col}")
-
-        st.stop()
-
-
-# ==========================================================
-# CHECK COLUMNS
-# ==========================================================
-
-required_columns = [
-    "hex_id",
-    "DATE",
-    "spi",
-    "ndvi",
-    "lst",
-    "Drought_Risk_Index",
-    "Drought_Class"
-]
-
-
 missing = [
-    col for col in required_columns
+
+    col
+
+    for col in required_columns
+
     if col not in df.columns
+
 ]
 
 
@@ -118,58 +160,27 @@ if missing:
 
 
 # ==========================================================
-# GEOMETRY FIX
-# Handles Polygon + MultiPolygon
+# CHECK GEOJSON COLUMN
 # ==========================================================
 
+if "hex_id" not in hex_gdf.columns:
 
-def geometry_to_coordinates(geom):
-
-    """
-    Converts shapely geometry into
-    PyDeck polygon coordinates
-    """
-
-    coordinates = []
-
-
-    if isinstance(geom, Polygon):
-
-        coordinates.append(
-            [
-                list(point)
-                for point in geom.exterior.coords
-            ]
-        )
-
-
-    elif isinstance(geom, MultiPolygon):
-
-        for polygon in geom.geoms:
-
-            coordinates.append(
-                [
-                    list(point)
-                    for point in polygon.exterior.coords
-                ]
-            )
-
-
-    return coordinates
-
-
-
-hex_gdf["coordinates"] = (
-    hex_gdf.geometry.apply(
-        geometry_to_coordinates
+    st.error(
+        "GeoJSON does not contain hex_id column"
     )
+
+    st.stop()
+
+
+
+# ==========================================================
+# FIX DATA TYPES
+# ==========================================================
+
+df["hex_id"] = (
+    df["hex_id"]
+    .astype(int)
 )
-
-
-
-# ==========================================================
-# MERGE HEXAGONS + DROUGHT DATA
-# ==========================================================
 
 
 hex_gdf["hex_id"] = (
@@ -178,10 +189,91 @@ hex_gdf["hex_id"] = (
 )
 
 
-df["hex_id"] = (
-    df["hex_id"]
-    .astype(int)
+
+# ==========================================================
+# GEOMETRY CONVERSION
+# Polygon + MultiPolygon Support
+# ==========================================================
+
+def geometry_to_coordinates(geom):
+
+    coordinates = []
+
+
+    if isinstance(geom, Polygon):
+
+        coordinates.append(
+
+            [
+                list(point)
+
+                for point in geom.exterior.coords
+
+            ]
+
+        )
+
+
+    elif isinstance(geom, MultiPolygon):
+
+        for polygon in geom.geoms:
+
+            coordinates.append(
+
+                [
+                    list(point)
+
+                    for point in polygon.exterior.coords
+
+                ]
+
+            )
+
+
+    return coordinates
+
+
+
+hex_gdf["coordinates"] = (
+
+    hex_gdf.geometry.apply(
+        geometry_to_coordinates
+    )
+
 )
+
+
+
+# ==========================================================
+# MERGE CHECK
+# ==========================================================
+
+available_hex = set(
+    hex_gdf["hex_id"]
+)
+
+
+available_data_hex = set(
+    df["hex_id"]
+)
+
+
+common_hex = (
+
+    available_hex
+
+    & available_data_hex
+
+)
+
+
+if len(common_hex) == 0:
+
+    st.error(
+        "No matching hex_id found between GeoJSON and CSV"
+    )
+
+    st.stop()
 
 
 
@@ -190,11 +282,32 @@ df["hex_id"] = (
 # ==========================================================
 
 dates = (
+
     df["DATE"]
+
     .sort_values()
+
     .unique()
+
 )
 
+
+
+# ==========================================================
+# SUCCESS MESSAGE (TEMPORARY)
+# ==========================================================
+
+st.success(
+    f"""
+Data loaded successfully!
+
+Records: {len(df):,}
+
+Hexagons: {len(hex_gdf):,}
+
+Available dates: {len(dates)}
+"""
+)
 
 
 # ==========================================================
