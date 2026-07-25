@@ -44,9 +44,9 @@ st.markdown(
 # FILE PATHS
 # ==========================================================
 
-CSV_FILE = r"D:\ai project\GeoAI_Drought_Early_Warning\data\drought_dashboard_data.parquet"
+CSV_FILE = "https://drive.google.com/file/d/1v444HE4Pf9bnlA5g6GuW66a2Gf98ecNw/view?usp=drive_link"
 
-GEOJSON_FILE = r"D:\ai project\GeoAI_Drought_Early_Warning\data\polyjson.json"
+GEOJSON_FILE = https://drive.google.com/file/d/1snmcDuol7nstpzHxYlXYZ9zmrxwnoP1G/view?usp=drive_link
 
 
 # ==========================================================
@@ -56,13 +56,11 @@ GEOJSON_FILE = r"D:\ai project\GeoAI_Drought_Early_Warning\data\polyjson.json"
 @st.cache_data
 def load_csv():
 
-   df = pd.read_parquet(CSV_FILE)
+    df = pd.read_csv(CSV_FILE)
 
     df["DATE"] = pd.to_datetime(df["DATE"])
 
     return df
-
-
 
 @st.cache_data
 def load_geojson():
@@ -70,13 +68,6 @@ def load_geojson():
     gdf = gpd.read_file(GEOJSON_FILE)
 
     return gdf
-
-
-
-df = load_csv()
-
-hex_gdf = load_geojson()
-
 
 
 # ==========================================================
