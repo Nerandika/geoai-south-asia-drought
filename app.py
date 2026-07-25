@@ -292,24 +292,6 @@ dates = (
 )
 
 
-
-# ==========================================================
-# SUCCESS MESSAGE (TEMPORARY)
-# ==========================================================
-
-st.success(
-    f"""
-Data loaded successfully!
-
-Records: {len(df):,}
-
-Hexagons: {len(hex_gdf):,}
-
-Available dates: {len(dates)}
-"""
-)
-
-
 # ==========================================================
 # DROUGHT COLOUR FUNCTIONS
 # ==========================================================
@@ -317,34 +299,35 @@ Available dates: {len(dates)}
 
 def drought_colour(value):
 
-    value = str(value)
-
-
     colours = {
 
-        "Normal":
-            [34,139,34,180],
+        "Normal": [34,139,34,180],
 
-        "Moderate":
-            [255,215,0,180],
+        "Moderate": [255,215,0,180],
 
-        "Severe":
-            [255,140,0,180],
+        "Severe": [255,140,0,180],
 
-        "Extreme":
-            [220,20,60,180]
+        "Extreme": [220,20,60,180]
 
     }
 
-
     return colours.get(
-        value,
+        str(value),
         [128,128,128,150]
     )
 
 
 
 def risk_colour(value):
+
+    try:
+
+        value = float(value)
+
+    except:
+
+        return [128,128,128,150]
+
 
     if value < 0.25:
 
@@ -368,21 +351,26 @@ def risk_colour(value):
 
 
 # ==========================================================
-# DYNAMIC DROUGHT CLASSES
+# AVAILABLE DROUGHT CLASSES
 # ==========================================================
 
 available_classes = (
+
     df["Drought_Class"]
+
     .dropna()
+
     .unique()
+
     .tolist()
+
 )
+
 
 
 # ==========================================================
 # SOUTH ASIA DEFAULT VIEW
 # ==========================================================
-
 
 south_asia_view = pdk.ViewState(
 
@@ -392,20 +380,23 @@ south_asia_view = pdk.ViewState(
 
     zoom=4,
 
-    pitch=0
+    pitch=0,
+
+    bearing=0
 
 )
+
+
 
 # ==========================================================
 # SIDEBAR CONTROLS
 # ==========================================================
 
-st.sidebar.header("⚙️ Dashboard Controls")
+st.sidebar.header(
+    "⚙️ Dashboard Controls"
+)
 
 
-# -------------------------------
-# Date selection
-# -------------------------------
 
 selected_date = st.sidebar.selectbox(
 
@@ -414,39 +405,36 @@ selected_date = st.sidebar.selectbox(
     dates,
 
     format_func=lambda x:
+
         pd.to_datetime(x).strftime("%Y-%m")
 
 )
 
 
 
-# -------------------------------
-# Map display mode
-# -------------------------------
-
 map_mode = st.sidebar.radio(
 
     "🗺 Map Display",
 
     [
+
         "Observed Drought",
+
         "AI Prediction",
+
         "Drought Risk Index"
+
     ]
 
 )
-
-
-
 # ==========================================================
 # FILTER SELECTED DATE
 # ==========================================================
 
 
 date_df = df[
-    df["DATE"] == selected_date
+    df["DATE"] == pd.to_datetime(selected_date)
 ].copy()
-
 
 
 # ==========================================================
@@ -463,7 +451,13 @@ map_df = hex_gdf.merge(
     how="inner"
 
 )
+if map_df.empty:
 
+    st.warning(
+        "No drought data available for this date."
+    )
+
+    st.stop()
 
 
 # ==========================================================
@@ -906,21 +900,23 @@ if len(current_hex) > 0:
         )
 
 
+with col4:
 
-    with col4:
+    if "Future_SPI" in prediction_row.index:
 
         st.metric(
-
             "SPI Forecast",
-
             round(
-
                 prediction_row["Future_SPI"],
-
                 2
-
             )
+        )
 
+    else:
+
+        st.metric(
+            "SPI Forecast",
+            "N/A"
         )
 
 
@@ -952,13 +948,18 @@ prob_columns = [
 
 
 
-available_probs = [
+available_probs = []
 
-    c for c in prob_columns
 
-    if c in prediction_row.index
+if "prediction_row" in locals():
 
-]
+    available_probs = [
+
+        c for c in prob_columns
+
+        if c in prediction_row.index
+
+    ]
 
 
 
