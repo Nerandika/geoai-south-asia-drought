@@ -39,15 +39,13 @@ st.markdown(
 """
 )
 
-
 # ==========================================================
 # FILE PATHS
 # ==========================================================
 
-CSV_FILE = "https://drive.google.com/file/d/1v444HE4Pf9bnlA5g6GuW66a2Gf98ecNw/view?usp=drive_link"
+CSV_FILE = "https://drive.google.com/uc?export=download&id=1v444HE4Pf9bnlA5g6GuW66a2Gf98ecNw"
 
-GEOJSON_FILE = "https://drive.google.com/file/d/1snmcDuol7nstpzHxYlXYZ9zmrxwnoP1G/view?usp=drive_link"
-
+GEOJSON_FILE = "https://drive.google.com/uc?export=download&id=1snmcDuol7nstpzHxYlXYZ9zmrxwnoP1G"
 
 # ==========================================================
 # LOAD DATA
