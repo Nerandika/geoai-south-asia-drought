@@ -486,9 +486,15 @@ with col4:
 
     st.metric(
 
-        "⚠ Mean Risk Index",
+        "SPI Current",
 
-        f"{mean_risk:.2f}"
+        round(
+
+            prediction_row["spi"],
+
+            2
+
+        )
 
     )
 
