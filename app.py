@@ -46,7 +46,7 @@ st.markdown(
 
 CSV_FILE = "https://drive.google.com/file/d/1v444HE4Pf9bnlA5g6GuW66a2Gf98ecNw/view?usp=drive_link"
 
-GEOJSON_FILE = https://drive.google.com/file/d/1snmcDuol7nstpzHxYlXYZ9zmrxwnoP1G/view?usp=drive_link
+GEOJSON_FILE = "https://drive.google.com/file/d/1snmcDuol7nstpzHxYlXYZ9zmrxwnoP1G/view?usp=drive_link"
 
 
 # ==========================================================
