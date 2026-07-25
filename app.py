@@ -270,16 +270,12 @@ available_classes = (
 # ==========================================================
 
 
-south_asia_view = pdk.ViewState(
-
-    latitude=20,
-
-    longitude=78,
-
-    zoom=4,
-
-    pitch=0
-
+view_state = pdk.ViewState(
+    latitude=20.0,
+    longitude=78.0,
+    zoom=4.0,
+    pitch=0,
+    bearing=0
 )
 
 # ==========================================================
