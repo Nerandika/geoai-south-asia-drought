@@ -44,9 +44,9 @@ st.markdown(
 # FILE PATHS
 # ==========================================================
 
-CSV_FILE = r"D:\ai project\GeoAI_Drought_Early_Warning\data\drought_dashboard_data.parquet"
+CSV_FILE = data/drought_dashboard_data
 
-GEOJSON_FILE = r"D:\ai project\GeoAI_Drought_Early_Warning\data\polyjson.json"
+GEOJSON_FILE = data/polyjson
 
 
 # ==========================================================
