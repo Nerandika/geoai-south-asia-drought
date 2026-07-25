@@ -76,7 +76,15 @@ df = load_csv()
 hex_gdf = load_geojson()
 
 
+#temp_check
+@st.cache_data
+def load_csv():
+    df = pd.read_parquet(CSV_FILE)
+    df["DATE"] = pd.to_datetime(df["DATE"])
 
+    st.write(df.columns)
+
+    return df
 # ==========================================================
 # CHECK COLUMNS
 # ==========================================================
