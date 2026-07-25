@@ -44,9 +44,9 @@ st.markdown(
 # FILE PATHS
 # ==========================================================
 
-CSV_FILE = data/drought_dashboard_data
+CSV_FILE = "data/drought_dashboard_data.parquet"
 
-GEOJSON_FILE = data/polyjson
+GEOJSON_FILE = "data/polyjson_small.json"
 
 
 # ==========================================================
@@ -55,9 +55,7 @@ GEOJSON_FILE = data/polyjson
 
 @st.cache_data
 def load_csv():
-
-   df = pd.read_parquet(CSV_FILE)
-
+    df = pd.read_parquet(CSV_FILE)
     df["DATE"] = pd.to_datetime(df["DATE"])
 
     return df
