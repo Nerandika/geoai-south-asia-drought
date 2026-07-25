@@ -54,14 +54,11 @@ GEOJSON_FILE = "https://drive.google.com/uc?export=download&id=1snmcDuol7nstpzHx
 @st.cache_data
 def load_csv():
 
-    df = pd.read_parquet(CSV_FILE)
+    df = pd.read_csv(CSV_FILE)
 
     df["DATE"] = pd.to_datetime(df["DATE"])
 
     return df
-
-
-df = load_csv()
 
 
 # Check required columns
