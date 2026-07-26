@@ -11,10 +11,11 @@ import numpy as np
 
 from shapely.geometry import Polygon, MultiPolygon
 
-
 # ==========================================================
 # STREAMLIT CONFIGURATION
 # ==========================================================
+
+import streamlit as st
 
 st.set_page_config(
     page_title="GeoAI South Asia Drought Monitoring Platform",
@@ -27,18 +28,13 @@ st.set_page_config(
 # TITLE
 # ==========================================================
 
-st.title(
-    "TerraPulse"
-)
+st.title("🌍 TerraPulse")
 
-st.markdown(
-"""
+st.markdown("""
 **AI-based drought assessment platform for South Asia**
 
-Study Region: South Asia
-"""
-)
-
+**Study Region:** South Asia
+""")
 
 # ==========================================================
 # FILE PATHS
