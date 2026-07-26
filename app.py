@@ -187,20 +187,29 @@ st.success(
     "✅ Data loaded successfully"
 )
 # ==========================================================
-# FIX DATA TYPES
+# FIX HEX_ID DATA TYPES
 # ==========================================================
 
 df["hex_id"] = (
-    df["hex_id"]
+    pd.to_numeric(
+        df["hex_id"],
+        errors="coerce"
+    )
+    .fillna(-1)
     .astype(int)
+    .astype(str)
 )
 
 
 hex_gdf["hex_id"] = (
-    hex_gdf["hex_id"]
+    pd.to_numeric(
+        hex_gdf["hex_id"],
+        errors="coerce"
+    )
+    .fillna(-1)
     .astype(int)
+    .astype(str)
 )
-
 
 
 # ==========================================================
