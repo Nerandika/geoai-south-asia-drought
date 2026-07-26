@@ -156,15 +156,6 @@ if "hex_id" not in hex_gdf.columns:
 
 
 
-# ==========================================================
-# PREPARE DATA TYPES
-# ==========================================================
-
-df["hex_id"] = df["hex_id"].astype(str)
-
-hex_gdf["hex_id"] = hex_gdf["hex_id"].astype(str)
-
-
 
 # ==========================================================
 # CHECK GEOMETRY
@@ -186,8 +177,7 @@ df["hex_id"] = (
         df["hex_id"],
         errors="coerce"
     )
-    .fillna(-1)
-    .astype(int)
+    .astype("Int64")
     .astype(str)
 )
 
@@ -197,8 +187,7 @@ hex_gdf["hex_id"] = (
         hex_gdf["hex_id"],
         errors="coerce"
     )
-    .fillna(-1)
-    .astype(int)
+    .astype("Int64")
     .astype(str)
 )
 
