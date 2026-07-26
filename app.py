@@ -64,7 +64,7 @@ def load_csv():
         df = pd.read_csv(CSV_FILE)
 
         df["DATE"] = pd.to_datetime(
-            df["DATE"]
+        df["DATE"]
         )
 
         return df
