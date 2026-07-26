@@ -2,6 +2,10 @@
 # Part 1/3
 # ==========================================================
 
+# ==========================================================
+# IMPORT LIBRARIES
+# ==========================================================
+
 import streamlit as st
 import pandas as pd
 import geopandas as gpd
@@ -11,11 +15,10 @@ import numpy as np
 
 from shapely.geometry import Polygon, MultiPolygon
 
+
 # ==========================================================
 # STREAMLIT CONFIGURATION
 # ==========================================================
-
-import streamlit as st
 
 st.set_page_config(
     page_title="GeoAI South Asia Drought Monitoring Platform",
@@ -35,6 +38,7 @@ st.markdown("""
 
 **Study Region:** South Asia
 """)
+
 
 # ==========================================================
 # FILE PATHS
@@ -63,18 +67,15 @@ def load_csv():
 
         df = pd.read_csv(CSV_FILE)
 
-        df["DATE"] = pd.to_datetime(
-        df["DATE"]
-        )
+        # Convert date column
+        df["DATE"] = pd.to_datetime(df["DATE"])
 
         return df
 
 
     except Exception as e:
 
-        st.error(
-            f"CSV loading error: {e}"
-        )
+        st.error(f"CSV loading error: {e}")
 
         st.stop()
 
@@ -89,18 +90,14 @@ def load_geojson():
 
     try:
 
-        gdf = gpd.read_file(
-            GEOJSON_FILE
-        )
+        gdf = gpd.read_file(GEOJSON_FILE)
 
         return gdf
 
 
     except Exception as e:
 
-        st.error(
-            f"GeoJSON loading error: {e}"
-        )
+        st.error(f"GeoJSON loading error: {e}")
 
         st.stop()
 
@@ -117,11 +114,14 @@ hex_gdf = load_geojson()
 
 
 # ==========================================================
-# CHECK CSV COLUMNS
+# DATA VALIDATION
 # ==========================================================
 
-required_columns = [
+# Uncomment this temporarily if you need to check columns
+# st.write(df.columns.tolist())
 
+
+required_columns = [
     "hex_id",
     "DATE",
     "spi",
@@ -130,25 +130,20 @@ required_columns = [
     "AI_Drought_Forecast",
     "Drought_Risk_Index",
     "Drought_Class"
-
 ]
 
 
-missing = [
-
+missing_columns = [
     col
-
     for col in required_columns
-
     if col not in df.columns
-
 ]
 
 
-if missing:
+if missing_columns:
 
     st.error(
-        f"Missing columns in CSV: {missing}"
+        f"Missing columns in CSV: {missing_columns}"
     )
 
     st.stop()
@@ -156,19 +151,47 @@ if missing:
 
 
 # ==========================================================
-# CHECK GEOJSON COLUMN
+# GEOJSON VALIDATION
 # ==========================================================
 
 if "hex_id" not in hex_gdf.columns:
 
     st.error(
-        "GeoJSON does not contain hex_id column"
+        "GeoJSON does not contain 'hex_id' column"
     )
 
     st.stop()
 
 
 
+# ==========================================================
+# PREPARE DATA TYPES
+# ==========================================================
+
+df["hex_id"] = df["hex_id"].astype(str)
+
+hex_gdf["hex_id"] = hex_gdf["hex_id"].astype(str)
+
+
+
+# ==========================================================
+# CHECK GEOMETRY
+# ==========================================================
+
+if hex_gdf.geometry.is_empty.any():
+
+    st.warning(
+        "Some geometries are empty. Please check GeoJSON."
+    )
+
+
+# ==========================================================
+# SUCCESS MESSAGE
+# ==========================================================
+
+st.success(
+    "✅ Data loaded successfully"
+)
 # ==========================================================
 # FIX DATA TYPES
 # ==========================================================
