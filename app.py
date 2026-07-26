@@ -64,21 +64,15 @@ GEOJSON_FILE = (
 def load_csv():
 
     try:
-
         df = pd.read_csv(CSV_FILE)
 
-        # Convert date column
         df["DATE"] = pd.to_datetime(df["DATE"])
 
         return df
 
-
     except Exception as e:
-
         st.error(f"CSV loading error: {e}")
-
         st.stop()
-
 
 
 # ==========================================================
