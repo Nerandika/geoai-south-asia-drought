@@ -28,7 +28,7 @@ st.set_page_config(
 # ==========================================================
 
 st.title(
-    "🌍 GeoAI South Asia Drought Early Warning System"
+    "TerraPulse"
 )
 
 st.markdown(
